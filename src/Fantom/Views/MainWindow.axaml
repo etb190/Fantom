@@ -5,6 +5,7 @@
         x:Class="Fantom.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="Fantom — Time Tracker"
+        Icon="avares://Fantom/Assets/app-icon.ico"
         Width="1150" Height="760"
         MinWidth="1020" MinHeight="660"
         WindowStartupLocation="CenterScreen"

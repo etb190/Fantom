@@ -1,0 +1,127 @@
+name: Release
+
+# Builds self-contained installers & portable archives and publishes them
+# to GitHub Releases. Triggered by pushing a version tag (e.g. v1.0.0)
+# or manually from the Actions tab (workflow_dispatch).
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.rid }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rid: win-x64
+            os: windows-latest
+          - rid: linux-x64
+            os: ubuntu-latest
+          - rid: osx-x64
+            os: macos-latest
+          - rid: osx-arm64
+            os: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Compute version
+        id: ver
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+          else
+            VERSION="0.0.0-dev.${GITHUB_RUN_NUMBER}"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Building version: $VERSION"
+
+      - name: Publish (${{ matrix.rid }})
+        shell: bash
+        run: >
+          dotnet publish src/Fantom/Fantom.csproj
+          -c Release -r ${{ matrix.rid }}
+          --self-contained true
+          -o publish/${{ matrix.rid }}
+          -p:Version=${{ steps.ver.outputs.version }}
+
+      # ---------- Windows: Inno Setup installer + portable zip ----------
+      - name: Build installer (Inno Setup)
+        if: matrix.rid == 'win-x64'
+        shell: pwsh
+        run: |
+          $iscc = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) {
+            Write-Host "Inno Setup not found, installing via Chocolatey..."
+            choco install innosetup -y --no-progress
+          }
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          & $iscc "installer\fantom.iss" "/DVersion=${{ steps.ver.outputs.version }}" "/DBinDir=..\publish\win-x64"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Package portable zip (win-x64)
+        if: matrix.rid == 'win-x64'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          New-Item -ItemType Directory -Force -Path "publish\win-portable" | Out-Null
+          Copy-Item -Path "publish\win-x64\*" -Destination "publish\win-portable" -Recurse -Force
+          Get-ChildItem "publish\win-portable" -Filter *.pdb -Recurse | Remove-Item -Force
+          Compress-Archive -Path "publish\win-portable\*" -DestinationPath "dist\Fantom-${{ steps.ver.outputs.version }}-win-x64-portable.zip"
+
+      # ---------- Linux / macOS: portable tarballs ----------
+      - name: Package tarball (${{ matrix.rid }})
+        if: matrix.rid != 'win-x64'
+        shell: bash
+        run: |
+          mkdir -p dist
+          chmod +x publish/${{ matrix.rid }}/Fantom || true
+          find publish/${{ matrix.rid }} -name '*.pdb' -delete || true
+          tar -czf "dist/Fantom-${{ steps.ver.outputs.version }}-${{ matrix.rid }}.tar.gz" -C "publish/${{ matrix.rid }}" .
+
+      - name: Upload artifact (${{ matrix.rid }})
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ matrix.rid }}
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 7
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Generate checksums
+        run: |
+          cd dist
+          sha256sum * > checksums.txt
+          ls -la
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
+          fail_on_unmatched_files: true

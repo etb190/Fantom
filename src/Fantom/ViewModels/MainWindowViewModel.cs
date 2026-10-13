@@ -256,6 +256,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
 
         // Force the ComboBoxes to re-resolve their selection after the refill.
         // Assigning the same reference would be a no-op and leave them blank.
+#pragma warning disable MVVMTK0034 // deliberate null-out + reassign to force selection change
         _selectedTaskOption = null!;
         OnPropertyChanged(nameof(SelectedTaskOption));
         SelectedTaskOption = previousTaskId != null
@@ -267,6 +268,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         SelectedHistoryFilter = previousFilterIsAll || previousFilterId == null
             ? TaskOption.All
             : HistoryFilterOptions.FirstOrDefault(o => o.Id == previousFilterId) ?? TaskOption.All;
+#pragma warning restore MVVMTK0034
     }
 
     private void RebuildTaskRows()

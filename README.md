@@ -1,5 +1,7 @@
 # Fantom ⏱
 
+![Release](https://img.shields.io/github/v/release/etb190/Fantom?include_prereleases)
+
 A lightweight desktop **work time tracker** built with **Avalonia + C# (.NET 8)**.
 
 Start the tracker, leave it running, and stop it when the work is over. Fantom logs every
@@ -61,6 +63,34 @@ Fantom reads and writes the exact same files as your current tracker:
 | Windows | `%LOCALAPPDATA%\Fantom\` |
 | Linux | `~/.local/share/Fantom/` |
 | macOS | `~/.local/share/Fantom/` |
+
+## Download & Install
+
+Grab the latest build from the [**Releases**](https://github.com/etb190/Fantom/releases) page:
+
+| File | What it is |
+|------|------------|
+| `Fantom-Setup-<version>.exe` | **Windows installer** (recommended) — setup wizard, Start-menu & optional desktop shortcuts, uninstaller |
+| `Fantom-<version>-win-x64-portable.zip` | Windows portable — unzip anywhere and run `Fantom.exe` |
+| `Fantom-<version>-linux-x64.tar.gz` | Linux portable — `tar -xzf`, then run `./Fantom` |
+| `Fantom-<version>-osx-x64.tar.gz` | macOS (Intel) portable |
+| `Fantom-<version>-osx-arm64.tar.gz` | macOS (Apple Silicon) portable |
+| `checksums.txt` | SHA-256 checksums for all files |
+
+All builds are **self-contained** — no .NET runtime install is needed.
+
+### Releasing a new version
+
+Releases are built automatically by GitHub Actions (`.github/workflows/release.yml`):
+
+```bash
+tag v1.0.1
+git push origin v1.0.1
+```
+
+That's it — the workflow builds the installer for every platform and attaches
+everything to a GitHub Release. You can also trigger a build without publishing
+from the **Actions → Release → Run workflow** button.
 
 ## Getting started
 
