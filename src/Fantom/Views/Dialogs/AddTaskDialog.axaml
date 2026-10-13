@@ -1,0 +1,32 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Fantom.Views.Dialogs.AddTaskDialog"
+        Title="New Task"
+        Width="420" SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Background="White"
+        FontFamily="fonts:Inter#Inter, Segoe UI, Helvetica Neue, Arial, sans-serif">
+
+  <StackPanel Margin="26,24,26,22" Spacing="16">
+    <TextBlock Text="New Task" FontSize="20" FontWeight="Bold" Foreground="#0F172A" />
+
+    <StackPanel Spacing="6">
+      <TextBlock Text="Name" FontSize="13" FontWeight="SemiBold" Foreground="#344054" />
+      <TextBox x:Name="NameBox" Watermark="e.g. Programming" CornerRadius="10" Height="38" />
+    </StackPanel>
+
+    <StackPanel Spacing="8">
+      <TextBlock Text="Color" FontSize="13" FontWeight="SemiBold" Foreground="#344054" />
+      <WrapPanel x:Name="SwatchesHost" />
+    </StackPanel>
+
+    <TextBlock x:Name="ErrorText" Text="Please enter a task name." FontSize="12.5" Foreground="#DC2626"
+               IsVisible="False" />
+
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,6,0,0">
+      <Button x:Name="CancelButton" Content="Cancel" Classes="ghost" Click="OnCancel" Width="90" Height="38" />
+      <Button x:Name="SaveButton" Content="Add Task" Classes="pill" Click="OnSave" Width="110" Height="38" />
+    </StackPanel>
+  </StackPanel>
+</Window>

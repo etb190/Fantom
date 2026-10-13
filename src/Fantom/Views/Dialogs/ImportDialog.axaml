@@ -1,0 +1,25 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Fantom.Views.Dialogs.ImportDialog"
+        Title="Import Data"
+        Width="480" SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Background="White"
+        FontFamily="fonts:Inter#Inter, Segoe UI, Helvetica Neue, Arial, sans-serif">
+
+  <StackPanel Margin="26,24,26,22" Spacing="16">
+    <TextBlock x:Name="TitleText" Text="Welcome to Fantom" FontSize="20" FontWeight="Bold" Foreground="#0F172A" />
+
+    <TextBlock x:Name="BodyText"
+               Text="Fantom logs your work in the same format as your existing tracker: sessions.json, tasks.json and timeGoals.json.&#10;&#10;You can import a folder that contains those files, or start fresh with empty data."
+               FontSize="13" Foreground="#667085" TextWrapping="Wrap" LineHeight="20" />
+
+    <TextBlock x:Name="ErrorText" Text="" FontSize="12.5" Foreground="#DC2626" IsVisible="False" TextWrapping="Wrap" />
+
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,6,0,0">
+      <Button x:Name="FreshButton" Content="Start Fresh" Classes="ghost" Click="OnStartFresh" Width="110" Height="38" />
+      <Button x:Name="FolderButton" Content="Choose Folder…" Classes="pill" Click="OnChooseFolder" Width="140" Height="38" />
+    </StackPanel>
+  </StackPanel>
+</Window>

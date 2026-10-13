@@ -1,0 +1,46 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Fantom.Views.Dialogs.EditGoalsDialog"
+        Title="Edit Goals"
+        Width="420" SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Background="White"
+        FontFamily="fonts:Inter#Inter, Segoe UI, Helvetica Neue, Arial, sans-serif">
+
+  <StackPanel Margin="26,24,26,22" Spacing="16">
+    <TextBlock Text="Edit Goals" FontSize="20" FontWeight="Bold" Foreground="#0F172A" />
+    <TextBlock Text="Daily, weekly, monthly and yearly targets in hours. Stored exactly like your timeGoals.json (e.g. &quot;6&quot;, &quot;24&quot;)."
+               FontSize="12.5" Foreground="#98A2B3" TextWrapping="Wrap" />
+
+    <Grid ColumnDefinitions="*,*" Margin="0,2,0,0">
+      <StackPanel Grid.Column="0" Spacing="6" Margin="0,0,10,0">
+        <TextBlock Text="Day goal (hours)" FontSize="13" FontWeight="SemiBold" Foreground="#344054" />
+        <TextBox x:Name="DayBox" Watermark="6" CornerRadius="10" Height="38" />
+      </StackPanel>
+      <StackPanel Grid.Column="1" Spacing="6" Margin="10,0,0,0">
+        <TextBlock Text="Week goal (hours)" FontSize="13" FontWeight="SemiBold" Foreground="#344054" />
+        <TextBox x:Name="WeekBox" Watermark="24" CornerRadius="10" Height="38" />
+      </StackPanel>
+    </Grid>
+
+    <Grid ColumnDefinitions="*,*">
+      <StackPanel Grid.Column="0" Spacing="6" Margin="0,0,10,0">
+        <TextBlock Text="Month goal (hours)" FontSize="13" FontWeight="SemiBold" Foreground="#344054" />
+        <TextBox x:Name="MonthBox" Watermark="96" CornerRadius="10" Height="38" />
+      </StackPanel>
+      <StackPanel Grid.Column="1" Spacing="6" Margin="10,0,0,0">
+        <TextBlock Text="Year goal (hours)" FontSize="13" FontWeight="SemiBold" Foreground="#344054" />
+        <TextBox x:Name="YearBox" Watermark="1700" CornerRadius="10" Height="38" />
+      </StackPanel>
+    </Grid>
+
+    <TextBlock x:Name="ErrorText" Text="Goals must be numbers (0 or more)." FontSize="12.5" Foreground="#DC2626"
+               IsVisible="False" />
+
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,6,0,0">
+      <Button x:Name="CancelButton" Content="Cancel" Classes="ghost" Click="OnCancel" Width="90" Height="38" />
+      <Button x:Name="SaveButton" Content="Save" Classes="pill" Click="OnSave" Width="90" Height="38" />
+    </StackPanel>
+  </StackPanel>
+</Window>

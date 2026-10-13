@@ -1,0 +1,17 @@
+## .NET / Avalonia
+bin/
+obj/
+out/
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.avalonia/
+.avalonia-build-tasks/
+**/.avalonia-build-tasks/
+[Aa]valonia[Rr]ider/
+TestResults/
+*.binlog
+publish/

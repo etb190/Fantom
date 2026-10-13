@@ -1,0 +1,271 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:Fantom.ViewModels"
+        xmlns:conv="clr-namespace:Fantom.Converters"
+        x:Class="Fantom.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Fantom — Time Tracker"
+        Width="1150" Height="760"
+        MinWidth="1020" MinHeight="660"
+        WindowStartupLocation="CenterScreen"
+        Background="#EEF1F6"
+        FontFamily="fonts:Inter#Inter, Segoe UI, Helvetica Neue, Arial, sans-serif">
+
+  <Window.Resources>
+    <conv:WidthPercentConverter x:Key="WidthPercent" />
+    <DataTemplate x:Key="DayGroupTemplate" x:DataType="vm:DayGroupViewModel">
+      <StackPanel Margin="0,0,0,16">
+        <Grid ColumnDefinitions="*,Auto" Margin="0,2,0,6">
+          <TextBlock Text="{Binding Header}" FontSize="13.5" FontWeight="SemiBold" Foreground="#0F172A" />
+          <TextBlock Grid.Column="1" Text="{Binding TotalText}" FontSize="13" FontWeight="SemiBold" Foreground="#2F9BFF" />
+        </Grid>
+        <ItemsControl ItemsSource="{Binding Sessions}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:SessionRowViewModel">
+              <Grid ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,4" VerticalAlignment="Center">
+                <Ellipse Width="9" Height="9" Fill="{Binding DotBrush}" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Text="{Binding TaskName}" FontSize="13.5" Foreground="#344054"
+                           Margin="11,0,10,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                <TextBlock Grid.Column="2" Text="{Binding TimeRangeText}" FontSize="12.5" Foreground="#98A2B3"
+                           VerticalAlignment="Center" Margin="0,0,16,0" />
+                <TextBlock Grid.Column="3" Text="{Binding DurationText}" FontSize="13" FontWeight="SemiBold"
+                           Foreground="#0F172A" VerticalAlignment="Center" />
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+    </DataTemplate>
+  </Window.Resources>
+
+  <Window.Styles>
+    <!-- App-level shared styles live in App.axaml -->
+  </Window.Styles>
+
+  <Grid Margin="26,22,26,26" RowDefinitions="Auto,Auto,*">
+
+    <!-- ============================ Header ============================ -->
+    <Grid ColumnDefinitions="*,Auto">
+      <StackPanel VerticalAlignment="Center">
+        <TextBlock Text="Today" FontSize="30" FontWeight="Bold" Foreground="#0F172A" />
+        <TextBlock Text="{Binding HeaderClock}" FontSize="13.5" Foreground="#98A2B3" Margin="0,5,0,0" />
+      </StackPanel>
+
+      <Border Classes="card" Grid.Column="1" Padding="6,6,10,6" VerticalAlignment="Center">
+        <StackPanel Orientation="Horizontal">
+          <ComboBox MinWidth="190" Height="40" VerticalAlignment="Center"
+                    BorderThickness="0" Background="Transparent" PlaceholderText="Select task…"
+                    ItemsSource="{Binding TaskOptions}" SelectedItem="{Binding SelectedTaskOption}">
+            <ComboBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:TaskOption">
+                <StackPanel Orientation="Horizontal" Spacing="9">
+                  <Ellipse Width="9" Height="9" Fill="{Binding Brush}" VerticalAlignment="Center" />
+                  <TextBlock Text="{Binding Name}" FontSize="13.5" VerticalAlignment="Center" />
+                </StackPanel>
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+
+          <Border Width="1" Height="26" Background="#EDF1F7" VerticalAlignment="Center" Margin="8,0,10,0" />
+
+          <Button Classes="startbtn" Command="{Binding StartStopCommand}">
+            <StackPanel Orientation="Horizontal" Spacing="14">
+              <StackPanel VerticalAlignment="Center" Spacing="1">
+                <TextBlock Text="{Binding StartStopLabel}" FontSize="14.5" FontWeight="SemiBold" Foreground="#0F172A" />
+                <TextBlock Text="{Binding ActiveElapsedText}" FontSize="12.5" FontWeight="SemiBold" Foreground="#2F9BFF"
+                           IsVisible="{Binding IsRunning}" />
+              </StackPanel>
+              <Grid Width="42" Height="42">
+                <Border CornerRadius="21" Background="#2F9BFF" IsVisible="{Binding !IsRunning}">
+                  <Path Data="M5,2 L15,9 L5,16 Z" Fill="White" Stretch="Uniform" Width="14" Height="14"
+                        HorizontalAlignment="Center" VerticalAlignment="Center" Margin="1,0,0,0" />
+                </Border>
+                <Border CornerRadius="21" Background="#EF4444" IsVisible="{Binding IsRunning}">
+                  <Path Data="M5,5 H13 V13 H5 Z" Fill="White" Stretch="Uniform" Width="11" Height="11"
+                        HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+              </Grid>
+            </StackPanel>
+          </Button>
+        </StackPanel>
+      </Border>
+    </Grid>
+
+    <!-- ========================= Stat cards ========================== -->
+    <UniformGrid Columns="3" Margin="0,20,0,0" Grid.Row="1">
+      <Border Classes="card" Margin="0,0,16,0">
+        <Grid ColumnDefinitions="*,Auto">
+          <StackPanel VerticalAlignment="Center" Spacing="7">
+            <TextBlock Text="Weekly Activity" FontSize="15" FontWeight="SemiBold" Foreground="#0F172A" />
+            <TextBlock Text="{Binding WeekActivityPercent}" FontSize="28" FontWeight="Bold" Foreground="#0F172A" />
+            <TextBlock Text="{Binding WeekActivitySub}" FontSize="12.5" Foreground="#98A2B3" TextTrimming="CharacterEllipsis" />
+          </StackPanel>
+          <Border Width="46" Height="46" CornerRadius="14" Background="#E7F3FF" Grid.Column="1" VerticalAlignment="Center">
+            <Path Data="M4,3 h3 v18 h-3 z M10.5,9 h3 v12 h-3 z M17,6 h3 v15 h-3 z"
+                  Fill="#2F9BFF" Stretch="Uniform" Width="20" Height="20" />
+          </Border>
+        </Grid>
+      </Border>
+
+      <Border Classes="card" Margin="0,0,16,0">
+        <Grid ColumnDefinitions="*,Auto">
+          <StackPanel VerticalAlignment="Center" Spacing="7">
+            <TextBlock Text="Worked This Week" FontSize="15" FontWeight="SemiBold" Foreground="#0F172A" />
+            <TextBlock Text="{Binding WeekWorkedText}" FontSize="28" FontWeight="Bold" Foreground="#0F172A" />
+            <TextBlock Text="{Binding WeekWorkedSub}" FontSize="12.5" Foreground="#98A2B3" TextTrimming="CharacterEllipsis" />
+          </StackPanel>
+          <Border Width="46" Height="46" CornerRadius="14" Background="#E7F3FF" Grid.Column="1" VerticalAlignment="Center">
+            <Path Data="M12,2 C6.48,2 2,6.48 2,12 C2,17.52 6.48,22 12,22 C17.52,22 22,17.52 22,12 C22,6.48 17.52,2 12,2 Z M12,4 C16.41,4 20,7.59 20,12 C20,16.41 16.41,20 12,20 C7.59,20 4,16.41 4,12 C4,7.59 7.59,4 12,4 Z M11,7 L11,13 L16.2,16 L17,14.6 L12.5,11.9 L12.5,7 Z"
+                  Fill="#2F9BFF" Stretch="Uniform" Width="20" Height="20" />
+          </Border>
+        </Grid>
+      </Border>
+
+      <Border Classes="card">
+        <Grid ColumnDefinitions="*,Auto">
+          <StackPanel VerticalAlignment="Center" Spacing="7">
+            <TextBlock Text="Tasks Worked" FontSize="15" FontWeight="SemiBold" Foreground="#0F172A" />
+            <TextBlock Text="{Binding TasksWorkedText}" FontSize="28" FontWeight="Bold" Foreground="#0F172A" />
+            <TextBlock Text="distinct tasks this week" FontSize="12.5" Foreground="#98A2B3" TextTrimming="CharacterEllipsis" />
+          </StackPanel>
+          <Border Width="46" Height="46" CornerRadius="14" Background="#E7F3FF" Grid.Column="1" VerticalAlignment="Center">
+            <Path Data="M10,4 H4 C2.9,4 2,4.9 2,6 L2,18 C2,19.1 2.9,20 4,20 H20 C21.1,20 22,19.1 22,18 L22,8 C22,6.9 21.1,6 20,6 H12 L10,4 Z"
+                  Fill="#2F9BFF" Stretch="Uniform" Width="20" Height="20" />
+          </Border>
+        </Grid>
+      </Border>
+    </UniformGrid>
+
+    <!-- ========================== Content ============================ -->
+    <Grid Grid.Row="2" Margin="0,16,0,0">
+
+      <!-- Dashboard -->
+      <Grid ColumnDefinitions="1.45*,1*" IsVisible="{Binding !IsHistoryOpen}">
+
+        <!-- Recent Activity -->
+        <Border Classes="card" Margin="0,0,8,0">
+          <Grid RowDefinitions="Auto,*">
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Text="Recent Activity" FontSize="16" FontWeight="SemiBold" Foreground="#0F172A" VerticalAlignment="Center" />
+              <Button Classes="pill" Grid.Column="1" Content="View All" Command="{Binding ViewAllCommand}" />
+            </Grid>
+
+            <ScrollViewer Grid.Row="1" Margin="0,14,2,0">
+              <StackPanel>
+                <TextBlock Text="No activity yet — start the tracker or import your data."
+                           FontSize="13" Foreground="#98A2B3" Margin="0,8,0,0"
+                           IsVisible="{Binding !HasRecentData}" TextWrapping="Wrap" />
+                <ItemsControl ItemsSource="{Binding RecentGroups}" IsVisible="{Binding HasRecentData}"
+                              ItemTemplate="{StaticResource DayGroupTemplate}" />
+              </StackPanel>
+            </ScrollViewer>
+          </Grid>
+        </Border>
+
+        <!-- Tasks -->
+        <Border Classes="card" Grid.Column="1" Margin="8,0,0,0">
+          <Grid RowDefinitions="Auto,*,Auto">
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Text="Tasks" FontSize="16" FontWeight="SemiBold" Foreground="#0F172A" VerticalAlignment="Center" />
+              <Button Classes="pill" Grid.Column="1" Content="+ Add Task" Command="{Binding AddTaskCommand}" />
+            </Grid>
+
+            <ScrollViewer Grid.Row="1" Margin="0,14,2,0">
+              <StackPanel>
+                <TextBlock Text="No tasks yet — add your first one to start tracking."
+                           FontSize="13" Foreground="#98A2B3" Margin="0,8,0,0"
+                           IsVisible="{Binding !HasTaskRows}" TextWrapping="Wrap" />
+                <ItemsControl ItemsSource="{Binding TaskRows}" IsVisible="{Binding HasTaskRows}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:TaskRowViewModel">
+                      <Border Background="#FAFBFD" CornerRadius="12" Padding="10,9" Margin="0,0,0,8">
+                        <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" VerticalAlignment="Center">
+                          <Panel Width="30" Height="30">
+                            <Border CornerRadius="9" Background="{Binding ColorBrush}" Opacity="0.18" />
+                            <TextBlock Text="{Binding Initial}" FontWeight="Bold" FontSize="13"
+                                       Foreground="{Binding ColorBrush}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                          </Panel>
+
+                          <StackPanel Grid.Column="1" Margin="12,0,8,0" VerticalAlignment="Center" Spacing="5">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                              <TextBlock Text="{Binding Name}" FontSize="13.5" FontWeight="SemiBold"
+                                         Foreground="#0F172A" TextTrimming="CharacterEllipsis" />
+                              <TextBlock Text="TRACKING" FontSize="9.5" FontWeight="Bold" Foreground="#2F9BFF"
+                                         VerticalAlignment="Center" IsVisible="{Binding IsActive}" />
+                            </StackPanel>
+                            <Border Height="5" CornerRadius="3" Background="#EDF1F7" ClipToBounds="True">
+                              <Border CornerRadius="3" Background="{Binding ColorBrush}" HorizontalAlignment="Left">
+                                <Border.Width>
+                                  <MultiBinding Converter="{StaticResource WidthPercent}">
+                                    <Binding Path="$parent[Border].Bounds.Width" />
+                                    <Binding Path="SharePercent" />
+                                  </MultiBinding>
+                                </Border.Width>
+                              </Border>
+                            </Border>
+                          </StackPanel>
+
+                          <TextBlock Grid.Column="2" Text="{Binding TodayText}" FontSize="12.5" Foreground="#98A2B3"
+                                     VerticalAlignment="Center" Margin="0,0,8,0" />
+                          <Button Grid.Column="3" Classes="miniPlay" Command="{Binding PlayCommand}" ToolTip.Tip="Start tracking">
+                            <Panel Width="26" Height="26">
+                              <Ellipse Fill="#2F9BFF" />
+                              <Path Data="M0,0 L9,5.5 L0,11 Z" Fill="White" Stretch="Fill" Width="9" Height="11"
+                                    HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2,0,0,0" />
+                            </Panel>
+                          </Button>
+                          <Button Grid.Column="4" Classes="iconBtn" Command="{Binding DeleteCommand}" ToolTip.Tip="Delete task">
+                            <TextBlock Text="×" FontSize="16" Foreground="#98A2B3" />
+                          </Button>
+                        </Grid>
+                      </Border>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+            </ScrollViewer>
+
+            <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="6" Margin="0,12,0,0">
+              <Button Classes="pill" Content="Edit Goals" Command="{Binding EditGoalsCommand}" />
+              <Button Classes="ghost" Content="Import Data" Command="{Binding ImportCommand}" />
+            </StackPanel>
+          </Grid>
+        </Border>
+      </Grid>
+
+      <!-- History -->
+      <Border Classes="card" IsVisible="{Binding IsHistoryOpen}">
+        <Grid RowDefinitions="Auto,*">
+          <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto">
+            <Button Classes="pill" Content="← Back" Command="{Binding BackCommand}" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="1" Text="History" FontSize="18" FontWeight="Bold" Foreground="#0F172A"
+                       Margin="14,0,0,0" VerticalAlignment="Center" />
+            <ComboBox Grid.Column="3" MinWidth="170" Height="36" VerticalAlignment="Center"
+                      ItemsSource="{Binding HistoryFilterOptions}" SelectedItem="{Binding SelectedHistoryFilter}">
+              <ComboBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:TaskOption">
+                  <StackPanel Orientation="Horizontal" Spacing="9">
+                    <Ellipse Width="9" Height="9" Fill="{Binding Brush}" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding Name}" FontSize="13" VerticalAlignment="Center" />
+                  </StackPanel>
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+            <TextBlock Grid.Column="4" Text="{Binding HistorySummary}" Margin="16,0,0,0" VerticalAlignment="Center"
+                       Foreground="#98A2B3" FontSize="13" />
+          </Grid>
+
+          <ScrollViewer Grid.Row="1" Margin="0,16,2,0">
+            <StackPanel>
+              <TextBlock Text="Nothing recorded yet." FontSize="13" Foreground="#98A2B3" Margin="0,8,0,0"
+                         IsVisible="{Binding !HasRecentData}" />
+              <ItemsControl ItemsSource="{Binding HistoryGroups}"
+                            ItemTemplate="{StaticResource DayGroupTemplate}" />
+            </StackPanel>
+          </ScrollViewer>
+        </Grid>
+      </Border>
+    </Grid>
+  </Grid>
+</Window>
